@@ -1,0 +1,34 @@
+.headerContainer {
+  height: 5rem;
+  border-bottom: 1px solid var(--gray-800);
+}
+
+.headerContent {
+  max-width: 1120px;
+  height: 5rem;
+  margin: 0 auto;
+  padding: 0;
+
+  .containerLogo {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: 600;
+
+    .logo {
+      width: 50px;
+      height: 50px;
+      margin-top: .7rem;
+    }
+
+    .title {
+      color: #F8F8F8;
+      font-size: 1.5rem;
+    }
+
+    .ponto {
+      color: #FF57B2;
+      font-size: 1.5rem;
+    }
+  }
+}
