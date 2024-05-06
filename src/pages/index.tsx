@@ -4,15 +4,14 @@ import ptBR from 'date-fns/locale/pt-BR';
 import { format } from 'date-fns';
 import { FiCalendar, FiUser } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 
-import Link from "next/link";
-
 interface Post {
-  id?: never;
+  id?: string;
   uid?: string;
   first_publication_date: string | null;
   data: {
@@ -32,7 +31,7 @@ interface HomeProps {
 }
 
 export default function Home(props: HomeProps): unknown {
-  let { next_page, results: posts } = props.postsPagination;
+  const { next_page, results: posts } = props?.postsPagination;
 
   const [nextPageLink, setNextPageLink] = useState(next_page);
   const [results, setResults] = useState(posts);
@@ -44,10 +43,10 @@ export default function Home(props: HomeProps): unknown {
 
     // busco proximo post
     const page = await fetch(pageWanted)
-      .then(function (response) {
+      .then(response => {
         return response.json();
       })
-      .catch(function (error) {
+      .catch(error => {
         console.log(
           `There has been a problem with your fetch operation: ${error.message}`
         );
@@ -69,7 +68,7 @@ export default function Home(props: HomeProps): unknown {
             subtitle: post.data.subtitle,
             author: post.data.author,
           },
-        }
+        };
         // console.log(postFormated)
         setResults([...results, { ...postFormated }]);
       }
@@ -87,18 +86,21 @@ export default function Home(props: HomeProps): unknown {
                   <div className={styles.title}>{post.data.title}</div>
                   <div className={styles.subtitle}>{post.data.subtitle}</div>
                   <div className={styles.infoPost}>
-                    <div><FiCalendar /></div>
                     <div>
-                    {
-                      format(
+                      <FiCalendar />
+                    </div>
+                    <div>
+                      {format(
                         new Date(post.first_publication_date),
                         'dd MMM yyyy',
                         {
                           locale: ptBR,
                         }
-                      )
-                    }</div>
-                    <div><FiUser /></div>
+                      )}
+                    </div>
+                    <div>
+                      <FiUser />
+                    </div>
                     <div>{post.data.author}</div>
                   </div>
                 </div>
@@ -108,16 +110,19 @@ export default function Home(props: HomeProps): unknown {
         })}
       </div>
       {nextPageLink && (
-        <button className={styles.loadMorePost} onClick={() => fetchPage(nextPageLink)}>
+        <button
+          type="button"
+          className={styles.loadMorePost}
+          onClick={() => fetchPage(nextPageLink)}
+        >
           Carregar mais posts
         </button>
-      )
-      }
+      )}
     </div>
   );
 }
 
-export const getStaticProps = async () => {
+export const getStaticProps: any = async () => {
   const prismic = getPrismicClient();
   const postsResponse = await prismic.query('', { pageSize: 1 });
 

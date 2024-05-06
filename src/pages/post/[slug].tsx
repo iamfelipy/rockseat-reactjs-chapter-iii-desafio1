@@ -32,14 +32,16 @@ interface PostProps {
   post: Post;
 }
 
-export default function Post({ post }: PostProps): JSX.Element {
+export default function Post({ post: postElements }: PostProps): JSX.Element {
   const router = useRouter();
   let readTime;
+
+  const post = { ...postElements };
 
   // const [tempoDeLeituraCalculado, setTempoDeLeituraCalculado] = useState(0);
 
   post.first_publication_date = format(
-    new Date(post.first_publication_date),
+    new Date(post.first_publication_date ?? new Date()),
     'dd MMM yyyy',
     {
       locale: ptBR,
@@ -51,27 +53,32 @@ export default function Post({ post }: PostProps): JSX.Element {
   }
 
   // gerador do tempo de leitura
-  let extractKeywords: any = post?.data?.content?.reduce((acc, value, index) => {
+  let extractKeywords: any = post?.data?.content?.reduce(
+    (accumulator, value, index) => {
+      let acc = accumulator;
+      let text = '';
 
-    let text = '';
+      text = text.concat(value.heading);
 
-    text = text.concat(value.heading);
+      const textBody = value.body.reduce((accumulator1, value1, index1) => {
+        let acc1 = accumulator1;
 
-    let textBody = value.body.reduce((acc1, value1, index1) => {
-      acc1 = acc1 + PrismicDOM.RichText.asText(post.data.content[0].body);
-      return acc1;
-    }, '');
+        acc1 += PrismicDOM.RichText.asText(post.data.content[0].body);
+        return acc1;
+      }, '');
 
-    text = text.concat(textBody).trim();
+      text = text.concat(textBody).trim();
 
-    acc = acc.concat(text);
+      acc = acc.concat(text);
 
-    if (index === 0) {
-      text.trim();
-    }
+      if (index === 0) {
+        text.trim();
+      }
 
-    return acc;
-  }, '');
+      return acc;
+    },
+    ''
+  );
 
   extractKeywords = extractKeywords.split(/\s+|\b(?=[!\?\.])(?!\.\s+)/);
 
@@ -86,29 +93,27 @@ export default function Post({ post }: PostProps): JSX.Element {
       </div>
       <div className={styles.main}>
         <div className={styles.header}>
-          <div className={styles.title}>
-            {post.data.title}
-          </div>
+          <div className={styles.title}>{post.data.title}</div>
           <div className={styles.infoPost}>
             <FiUser />
             <div>{post.data.author}</div>
             <FiCalendar />
             <div>{post.first_publication_date}</div>
             <FiClock />
-            <div>{readTime + ' min'}</div>
+            <div>{`${readTime} min`}</div>
           </div>
         </div>
         <div className={styles.content}>
-          {
-            post.data.content.map(section => {
-              return (
-                <div key={section.heading} className={styles.bloco}>
-                  <div className={styles.title}>{section.heading}</div>
-                  {section.body.map((v, index) => (<p key={index}>{v.text}</p>))}
-                </div>
-              )
-            })
-          }
+          {post.data.content.map(section => {
+            return (
+              <div key={section.heading} className={styles.bloco}>
+                <div className={styles.title}>{section.heading}</div>
+                {section.body.map((v, index) => (
+                  <p key={`${v.text}`}>{v.text}</p>
+                ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -157,7 +162,6 @@ export const getStaticProps = async ({ params }: any): Promise<any> => {
   // console.log(JSON.stringify(response, null, 2));
 
   const contentFormated = response.data.content.reduce((acc, value) => {
-
     acc.push({
       heading: value.heading,
       body: value.body,
