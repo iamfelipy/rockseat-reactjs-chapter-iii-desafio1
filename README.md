@@ -2,6 +2,8 @@
 
 Este projeto é um blog desenvolvido do zero, consumindo dados do Prismic e implementando uma interface conforme o layout do Figma. Utiliza tecnologias modernas como NEXT.JS, TypeScript, React, entre outras, para oferecer uma experiência robusta e flexível aos usuários.
 
+[Capa do projeto](https://github.com/iamfelipy/rockseat-reactjs-chapter-iii-desafio1/blob/main/readme-capa.png?raw=true)
+
 #### Algumas das implementações
 
 - Estilizações global, comun e individuais;
